@@ -1,0 +1,50 @@
+var express = require('express');
+var http = require('http');
+var url = require('url');
+var bodyParser = require('body-parser');
+var app = express();
+var port = process.env.PORT || 5000
+var async = require('async');
+
+var Twitter = require('twitter');
+
+var client = new Twitter({
+  consumer_key: '',
+  consumer_secret: '',
+  access_token_key: '',
+  access_token_secret: ''
+});
+
+var params = {screen_name: 'nodejs'};
+
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json());
+
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Content-Type');
+  next();
+});
+
+app.listen(port);
+console.log('Listening at ' + port);
+
+app.get('/', function (req, res) {
+
+    if(req.query.value != undefined){
+      console.log("Threshold Value: " + req.query.value);
+      postToTwitter("Threshold Value: " + req.query.value);
+      res.send(req.query.value);
+    }else {
+    	res.send('No Support yet');
+    }
+
+});
+
+function postToTwitter(data) {
+  client.post('statuses/update', {status: data},  function(error, tweet, response) {
+    if(error) throw error;
+    console.log(tweet);  // Tweet body.
+    console.log(response);  // Raw response object.
+  });
+}
