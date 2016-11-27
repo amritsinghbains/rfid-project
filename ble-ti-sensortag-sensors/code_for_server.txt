@@ -32,8 +32,8 @@ console.log('Listening at ' + port);
 app.get('/', function (req, res) {
 
     if(req.query.value != undefined){
-      console.log("Threshold Value: " + req.query.value);
-      postToTwitter("Threshold Value: " + req.query.value);
+      console.log(req.query.value);
+      postToTwitter(req.query.value);
       res.send(req.query.value);
     }else {
     	res.send('No Support yet');
@@ -42,8 +42,11 @@ app.get('/', function (req, res) {
 });
 
 function postToTwitter(data) {
-  client.post('statuses/update', {status: data},  function(error, tweet, response) {
-    if(error) throw error;
+  var date = new Date();
+  client.post('statuses/update', {status: 'Light intensity in the room: ' + data + ' \n\nDateTime: ' + date},  function(error, tweet, response) {
+    if(error) {
+      console.log(error);
+    }
     console.log(tweet);  // Tweet body.
     console.log(response);  // Raw response object.
   });
